@@ -54,7 +54,6 @@ section{position:relative;z-index:2;background:var(--bg);border-top:2px solid va
 .n:empty:before{content:counter(t,decimal-leading-zero)}
 .row.sel .n{background:var(--bg);color:var(--blue);border-color:var(--bg)}
 .row img{width:44px;height:44px;object-fit:cover;flex:none;background:#d6d5cf;filter:grayscale(1)}
-.row.sel img{mix-blend-mode:normal}
 .row b{display:block;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .pl{flex:none;width:44px;height:44px;border:2px solid currentColor;background:transparent;color:inherit;display:grid;place-items:center;cursor:pointer;transition:transform 120ms var(--ease),background-color 150ms ease,color 150ms ease}
 .row.playing .pl svg{display:none}
@@ -153,7 +152,7 @@ section{border-radius:28px 28px 0 0;background:rgba(236,235,230,.96)}
 @keyframes blink{50%{opacity:.25}}
 .row .fill{position:absolute;left:0;top:0;bottom:0;width:var(--w,0%);background:rgba(29,43,255,.16);border-radius:inherit;z-index:-2;transition:width .8s var(--ease)}
 .pct{flex:none;min-width:46px;text-align:right;font:500 13px 'IBM Plex Mono',ui-monospace,monospace}
-.row.mine b:after{content:"Tu voto";margin-left:8px;font:500 10px 'IBM Plex Mono',ui-monospace,monospace;text-transform:uppercase;background:var(--blue);color:var(--bg);padding:2px 8px;border-radius:999px;vertical-align:middle}
+.row.mine b:after{content:var(--mine-label,"");margin-left:8px;font:500 10px 'IBM Plex Mono',ui-monospace,monospace;text-transform:uppercase;background:var(--blue);color:var(--bg);padding:2px 8px;border-radius:999px;vertical-align:middle}
 .res{position:fixed;inset:0;z-index:92;display:flex;flex-direction:column;background:rgba(12,12,13,.985);color:var(--bg);overscroll-behavior:contain;transform:translateY(100%);visibility:hidden;transition:transform .8s cubic-bezier(.77,0,.18,1),visibility 0s .8s}
 .res.show{transform:none;visibility:visible;transition:transform .8s cubic-bezier(.77,0,.18,1),visibility 0s}
 .r-in{flex:1;overflow:auto;width:100%;max-width:720px;margin:0 auto;padding:28px 20px 130px}
@@ -217,79 +216,92 @@ footer{margin-left:-20px;margin-right:-20px;padding-left:20px;padding-right:20px
 </style>
 </head>
 <body>
-<div class="intro" aria-hidden="true"><span>SUBSUELO</span></div>
+<div class="intro" aria-hidden="true"><span data-c="brand"></span></div>
 <div class="prog" aria-hidden="true"></div>
 <div class="cur" aria-hidden="true"></div>
 <div class="wrap">
   <header class="top">
-    <div class="logo">SUBSUELO</div>
-    <a class="btn ghost" href="#entradas">Entradas</a>
+    <div class="logo" data-c="brand"></div>
+    <a class="btn ghost" href="#entradas" data-c="nav"></a>
   </header>
 
   <div class="hero">
-    <h1>VOS ELEGÍS QUÉ SUENA</h1>
-    <p class="lede">Elegí 3 temas. Los más votados los pasa el DJ en la noche del sábado.</p>
-    <p class="when">Sábado 31 de octubre, desde las 00:00. Av. Ejemplo 1234.</p>
-    <a class="btn" href="#votar">Empezar a votar</a>
+    <h1 data-c="title"></h1>
+    <p class="lede" data-c="lede"></p>
+    <p class="when" data-c="when"></p>
+    <a class="btn" href="#votar" data-c="start"></a>
     <div class="waves" aria-hidden="true"><div class="wave g" id="wave2"></div><div class="wave" id="wave"></div></div>
   </div>
 
-  <div class="ticker" aria-hidden="true"><div class="track"><span>VOTÁ</span><span>SUBSUELO</span><span>SÁBADO 31</span><span>VOTÁ</span><span>SUBSUELO</span><span>SÁBADO 31</span></div></div>
+  <div class="ticker" aria-hidden="true"><div class="track" id="trackBox"></div></div>
 
   <section id="votar">
-    <h2>EL SETLIST</h2>
-    <p class="sub">Tocá el tema para sumarlo y el botón de play para escucharlo. Podés cambiar tu elección antes de confirmar.</p>
-    <div class="tot" id="tot" hidden><span class="dot"></span><b id="totN">0</b><span>personas votaron</span></div>
+    <h2 data-c="setlistTitle"></h2>
+    <p class="sub" data-c="setlistHint"></p>
+    <div class="tot" id="tot" hidden><span class="dot"></span><b id="totN">0</b><span data-c="peopleVoted"></span></div>
     <div class="songs" id="songs"></div>
   </section>
 
   <section id="entradas">
-    <h2>CONSEGUÍ TU LUGAR</h2>
+    <h2 data-c="ticketsTitle"></h2>
     <div class="card">
-      <h3>Entrada general</h3>
-      <p>Ingreso hasta las 02:00. Mayores de 18 con DNI.</p>
-      <a class="btn" id="buy" href="#">Comprar entrada</a>
+      <h3 data-c="ticketName"></h3>
+      <p data-c="ticketText"></p>
+      <a class="btn" id="buy" href="#" data-c="ticketCta"></a>
     </div>
   </section>
 
-  <footer>© 2026 SUBSUELO · Bases y condiciones · Privacidad · Tomá con responsabilidad. Prohibida la venta de alcohol a menores de 18.</footer>
+  <footer data-c="footer"></footer>
 </div>
 
 <input id="web" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px;opacity:0">
 <div class="bar">
   <div class="wrap" id="barVote">
-    <span class="count"><span id="n">0</span>/3 elegidos</span>
-    <button class="btn" id="go" disabled>Confirmar votos</button>
+    <span class="count"><span id="n">0</span>/3 <span data-c="picked"></span></span>
+    <button class="btn" id="go" disabled data-c="confirm"></button>
   </div>
   <div class="wrap" id="barDone" hidden>
-    <span class="count">Ya votaste</span>
-    <button class="btn" id="showRes" type="button">Ver resultados</button>
+    <span class="count" data-c="voted"></span>
+    <button class="btn" id="showRes" type="button" data-c="seeResults"></button>
     <button id="share" type="button" hidden></button>
   </div>
 </div>
-<div class="wa" id="wa" aria-hidden="true"><div><strong>Abriendo WhatsApp</strong><small>Mensaje listo para enviar</small></div><div class="o-wave"></div></div>
+<div class="wa" id="wa" aria-hidden="true"><div><strong data-c="waTitle"></strong><small data-c="waSub"></small></div><div class="o-wave"></div></div>
 <div class="outro" id="outro" role="dialog" aria-modal="true" aria-labelledby="ot" aria-hidden="true" data-lenis-prevent>
   <div class="o-in">
-    <p class="o-k">Voto registrado</p>
-    <div class="o-title" id="ot">Gracias por votar</div>
+    <p class="o-k" data-c="thanksKicker"></p>
+    <div class="o-title" id="ot" data-c="thanksTitle"></div>
     <ol></ol>
-    <div class="o-actions"><button class="btn" id="o-res" type="button">Ver resultados</button><button class="btn ghost" id="o-share" type="button">Compartir</button><button class="btn ghost" id="o-close" type="button">Volver</button></div>
+    <div class="o-actions"><button class="btn" id="o-res" type="button" data-c="seeResults"></button><button class="btn ghost" id="o-share" type="button" data-c="share"></button><button class="btn ghost" id="o-close" type="button" data-c="back"></button></div>
   </div>
   <div class="o-wave" aria-hidden="true"></div>
 </div>
 <div class="res" id="res" role="dialog" aria-modal="true" aria-labelledby="rt0" aria-hidden="true" data-lenis-prevent>
   <div class="r-in">
-    <p class="o-k" id="rt0"><span class="dot"></span> Resultados en vivo</p>
-    <div class="r-total"><b id="rN">0</b><span>personas votaron</span></div>
-    <p id="rEmpty" class="sub" hidden>Todavía no hay votos. Sé el primero en aparecer acá.</p>
+    <p class="o-k" id="rt0"><span class="dot"></span> <span data-c="resultsKicker"></span></p>
+    <div class="r-total"><b id="rN">0</b><span data-c="peopleVoted"></span></div>
+    <p id="rEmpty" class="sub" hidden data-c="resultsEmpty"></p>
     <ol id="rList"></ol>
   </div>
-  <div class="r-bar"><button class="btn" id="r-back" type="button">Volver a la página</button></div>
+  <div class="r-bar"><button class="btn" id="r-back" type="button" data-c="resultsBack"></button></div>
 </div>
 <script src="https://cdn.jsdelivr.net/npm/lenis@1.1.20/dist/lenis.min.js"></script>
 <script>
-// 1) Pegá acá los links de los temas de Spotify, uno por línea (borrá el de ejemplo).
-var LINKS=`
+/* ══════════════════════════════════════════════════════════════
+   ESTE BLOQUE ES LO ÚNICO QUE TENÉS QUE TOCAR.
+   Textos, links y números de todo el sitio viven acá.
+   ══════════════════════════════════════════════════════════════ */
+const CONFIG = {
+  /** URL de tu Apps Script. Empieza con https://script.google.com/macros/s/ y termina en /exec.
+      NO uses la que empieza con script.googleusercontent.com/macros/echo (es una copia temporal). */
+  ENDPOINT: "https://script.google.com/macros/s/AKfycbyyhX2InQqzUp5EBBODrzHP-8bH94gl3Ramch3DkWXuQVJ5jhrt-kHoYcx4qbDjcrkFWA/exec",
+  /** Tu WhatsApp con código de país, sin + ni espacios. Argentina: 54 + 9 + área sin 0 + número sin 15. */
+  WA_NUMBER: "5493815415893",
+  WA_MESSAGE: "Hola, buenas, quiero comprar una entrada.",
+  /** Si cambiás la edición (nueva fecha), cambiá esta clave y todos pueden votar de nuevo. */
+  VOTE_KEY: "subsuelo_voto_v1",
+  /** Pegá los 50 links de Spotify, uno por línea (acepta /intl-es/ y ?si=…). */
+  TRACKS: `
 https://open.spotify.com/track/3h5T5JypYU7huFiVYhv1dr
 https://open.spotify.com/track/4vJaNTSA8fYLLLSauHmkLe
 https://open.spotify.com/track/5dgREmLlxVJn6h8U0CofEo
@@ -340,20 +352,72 @@ https://open.spotify.com/track/0ZAJ660VP57lLK4U7NlGOy
 https://open.spotify.com/track/2lTm559tuIvatlT1u0JYG2
 https://open.spotify.com/track/6DUdDIRgLqCGq1DwkNWQTN
 https://open.spotify.com/track/5dDlknAL9imbXXl7uG7oqe
-`;
+`,
+  CLIP_NOTE: "Tocá play en el reproductor de Spotify para escuchar.",
+  COPY: {
+    brand: "SUBSUELO",
+    pageTitle: "SUBSUELO | Elegí qué suena esta noche",
+    nav: "Entradas",
+    title: "Vos elegís qué suena",
+    lede: "Elegí 3 temas. Los más votados los pasa el DJ en la noche del sábado.",
+    when: "Sábado 31 de octubre, desde las 00:00. Av. Ejemplo 1234.",
+    start: "Empezar a votar",
+    ticker: ["VOTÁ", "SUBSUELO", "SÁBADO 31"],
+    setlistTitle: "El setlist",
+    setlistHint: "Tocá el tema para sumarlo y el botón de play para escucharlo. Podés cambiar tu elección antes de confirmar.",
+    setlistHintVoted: "Resultados en vivo, ordenados por votos. Tocá el botón de play para escuchar cualquier tema.",
+    tapLabel: "Tocá aquí",
+    listen: "Escuchar",
+    trackFallback: "Tema",
+    emptyList: "Pegá los links de Spotify en TRACKS para ver la lista.",
+    picked: "elegidos",
+    confirm: "Confirmar votos",
+    voted: "Ya votaste",
+    seeResults: "Ver resultados",
+    peopleVoted: "personas votaron",
+    ticketsTitle: "Conseguí tu lugar",
+    ticketName: "Entrada general",
+    ticketText: "Ingreso hasta las 02:00. Mayores de 18 con DNI.",
+    ticketCta: "Comprar entrada",
+    waTitle: "Abriendo WhatsApp",
+    waSub: "Mensaje listo para enviar",
+    thanksKicker: "Voto registrado",
+    thanksTitle: "Gracias por votar",
+    share: "Compartir",
+    shareText: "Ya voté qué suena en SUBSUELO. Votá vos también.",
+    copied: "Link copiado",
+    back: "Volver",
+    resultsKicker: "Resultados en vivo",
+    resultsEmpty: "Todavía no hay votos. Sé el primero en aparecer acá.",
+    resultsBack: "Volver a la página",
+    mine: "Tu voto",
+    vote: "voto",
+    votes: "votos",
+    testMode: "Modo de prueba: falta pegar la URL de Apps Script en ENDPOINT, por eso no se guardan ni se leen votos.",
+    footer: "© 2026 SUBSUELO · Bases y condiciones · Privacidad · Tomá con responsabilidad. Prohibida la venta de alcohol a menores de 18.",
+  },
+};
+var LINKS=CONFIG.TRACKS;
+var COPY=CONFIG.COPY;
+/* Pone todos los textos en la página (nada visible está escrito fuera de CONFIG). */
+(function(){
+  document.title=COPY.pageTitle;
+  document.querySelectorAll('[data-c]').forEach(function(el){el.textContent=COPY[el.getAttribute('data-c')]});
+  var tb=document.getElementById('trackBox');
+  if(tb){[0,1].forEach(function(){COPY.ticker.forEach(function(w){var s=document.createElement('span');s.textContent=w;tb.appendChild(s)})})}
+  document.getElementById('songs').style.setProperty('--mine-label','"'+COPY.mine+'"');
+})();
 var SP=null;
 var TOUCH=matchMedia('(hover:none)').matches;
 window.onSpotifyIframeApiReady=function(api){SP=api};
 (function(){var sc=document.createElement('script');sc.src='https://open.spotify.com/embed/iframe-api/v1';sc.async=true;document.head.appendChild(sc)})();
-// 2) Pegá acá la URL de tu Google Apps Script (termina en /exec) para guardar los votos.
-var ENDPOINT='https://script.google.com/macros/s/AKfycbyyhX2InQqzUp5EBBODrzHP-8bH94gl3Ramch3DkWXuQVJ5jhrt-kHoYcx4qbDjcrkFWA/exec';
-// 3) Tu número de WhatsApp con código de país y sin signos. Ej. Argentina: 5491112345678
-var WA_NUMBER='5493815415893';
-var KEY='subsuelo_voto_v1';
+var ENDPOINT=CONFIG.ENDPOINT;
+var WA_NUMBER=CONFIG.WA_NUMBER;
+var KEY=CONFIG.VOTE_KEY;
 var seen={};
 var SONGS=(LINKS.match(/track[\/:][A-Za-z0-9]{22}/g)||[]).map(function(m){return m.slice(6)})
   .filter(function(id){if(seen[id])return false;seen[id]=1;return true})
-  .map(function(id,i){return {id:id,title:'Tema '+(i+1)}});
+  .map(function(id,i){return {id:id,title:COPY.trackFallback+' '+(i+1)}});
 var sel=[],box=document.getElementById('songs'),go=document.getElementById('go'),nEl=document.getElementById('n'),rows=[];
 function closeAll(){rows.forEach(function(r){var pb=r.el.querySelector('.pl');if(pb)pb.setAttribute('aria-expanded','false');r.el.classList.remove('playing');r.el.querySelector('.emb').innerHTML=''})}
 SONGS.forEach(function(s,i){
@@ -366,9 +430,9 @@ SONGS.forEach(function(s,i){
   var t=document.createElement('b');t.textContent=s.title;
   wrap.appendChild(t);
   pk.appendChild(n);pk.appendChild(img);pk.appendChild(wrap);
-  var pl=document.createElement('button');pl.type='button';pl.className='pl';pl.setAttribute('aria-expanded','false');pl.innerHTML='<svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>';pl.setAttribute('aria-label','Escuchar '+s.title);
+  var pl=document.createElement('button');pl.type='button';pl.className='pl';pl.setAttribute('aria-expanded','false');pl.innerHTML='<svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>';pl.setAttribute('aria-label',COPY.listen+' '+s.title);
   var emb=document.createElement('div');emb.className='emb';
-  var lab=document.createElement('span');lab.className='tap';lab.textContent='Tocá aquí';lab.setAttribute('aria-hidden','true');lab.onclick=function(){pl.click()};
+  var lab=document.createElement('span');lab.className='tap';lab.textContent=COPY.tapLabel;lab.setAttribute('aria-hidden','true');lab.onclick=function(){pl.click()};
   head.appendChild(pk);head.appendChild(lab);head.appendChild(pl);el.appendChild(head);el.appendChild(emb);box.appendChild(el);
   rows.push({el:el,n:n,t:t,pk:pk});
   pk.onclick=function(){if(yaVoto())return;var j=sel.indexOf(i);if(j>=0)sel.splice(j,1);else if(sel.length<3)sel.push(i);paint()};
@@ -389,7 +453,7 @@ SONGS.forEach(function(s,i){
       f.title=s.title;emb.appendChild(f);
     }
     var hp=document.createElement('p');hp.className='hint';
-    hp.textContent='Tocá play en el reproductor de Spotify para escuchar.';
+    hp.textContent=CONFIG.CLIP_NOTE;
     emb.insertBefore(hp,emb.firstChild);
     if(TOUCH)setTimeout(function(){el.scrollIntoView({behavior:'smooth',block:'center'})},80);
   };
@@ -397,7 +461,7 @@ SONGS.forEach(function(s,i){
   fetch('https://open.spotify.com/oembed?url='+encodeURIComponent('https://open.spotify.com/track/'+s.id))
     .then(function(r){return r.json()})
     .then(function(d){
-      if(d.title){s.title=d.title;t.textContent=d.title;pl.setAttribute('aria-label','Escuchar '+d.title)}
+      if(d.title){s.title=d.title;t.textContent=d.title;pl.setAttribute('aria-label',COPY.listen+' '+d.title)}
       if(d.thumbnail_url){img.src=d.thumbnail_url;img.hidden=false}})
     .catch(function(){});
 });
@@ -407,7 +471,7 @@ SONGS.forEach(function(s,i){
   else{var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){var el=e.target;el.classList.add('in');io.unobserve(el);setTimeout(function(){el.style.transitionDelay=''},900)}})},{rootMargin:'0px 0px -6% 0px'});
     rows.forEach(function(r,i){r.el.style.transitionDelay=(i%5*60)+'ms';io.observe(r.el)})}
 })();
-if(!SONGS.length){box.innerHTML='<p class="sub">Pegá los links de Spotify en LINKS para ver la lista.</p>'}
+if(!SONGS.length){box.innerHTML='<p class="sub">'+COPY.emptyList+'</p>'}
 function paint(){
   rows.forEach(function(r,i){var k=sel.indexOf(i);
     r.el.classList.toggle('sel',k>=0);r.el.classList.toggle('off',sel.length===3&&k<0);
@@ -439,9 +503,9 @@ go.onclick=sendVote;
 if(yaVoto())showDone();
 paint();
 document.getElementById('share').onclick=function(){
-  var t='Ya voté qué suena en SUBSUELO. Votá vos también.';
-  if(navigator.share){navigator.share({title:'SUBSUELO',text:t,url:location.href}).catch(function(){})}
-  else{try{navigator.clipboard.writeText(t+' '+location.href)}catch(e){}this.textContent='Link copiado'}
+  var t=COPY.shareText;
+  if(navigator.share){navigator.share({title:COPY.brand,text:t,url:location.href}).catch(function(){})}
+  else{try{navigator.clipboard.writeText(t+' '+location.href)}catch(e){}this.textContent=COPY.copied}
 };
 (function(){
   var d=document,de=d.documentElement,reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -522,7 +586,7 @@ document.addEventListener('keydown',function(e){if(e.key==='Escape')closeOutro()
 (function(){
   var a=document.getElementById('buy'),w=document.getElementById('wa');if(!a||!w)return;
   var num=(typeof WA_NUMBER==='string'?WA_NUMBER:'').replace(/\D/g,'');
-  a.href='https://wa.me/'+num+'?text='+encodeURIComponent('Hola, buenas, quiero comprar una entrada.');
+  a.href='https://wa.me/'+num+'?text='+encodeURIComponent(CONFIG.WA_MESSAGE);
   a.target='_blank';a.rel='noopener';
   var wv=w.querySelector('.o-wave');
   for(var i=0;i<40;i++){var b=document.createElement('i');
@@ -592,11 +656,11 @@ function renderRes(d,idx,val,S,max){
     li.querySelector('.rk').textContent=String(pos+1).padStart(2,'0');
     li.querySelector('.rt').textContent=SONGS[i].title;
     li.querySelector('.rb i').style.setProperty('--w',(v*100/max)+'%');
-    li.querySelector('.rp').innerHTML=fmtPct(S?v*100/S:0)+'<small>'+v+(v===1?' voto':' votos')+'</small>';
+    li.querySelector('.rp').innerHTML=fmtPct(S?v*100/S:0)+'<small>'+v+' '+(v===1?COPY.vote:COPY.votes)+'</small>';
     ol.appendChild(li)});
   var em=document.getElementById('rEmpty');
-  if(!ENDPOINT){em.textContent='Modo de prueba: falta pegar la URL de Apps Script en ENDPOINT, por eso no se guardan ni se leen votos.';em.hidden=false}
-  else{em.textContent='Todavía no hay votos. Sé el primero en aparecer acá.';em.hidden=any}
+  if(!ENDPOINT){em.textContent=COPY.testMode;em.hidden=false}
+  else{em.textContent=COPY.resultsEmpty;em.hidden=any}
 }
 function markMine(){
   var ids=[];try{ids=JSON.parse(localStorage.getItem(KEY+'_p')||'[]')}catch(e){}
@@ -605,7 +669,7 @@ function markMine(){
 function showVotedUI(){
   document.getElementById('tot').hidden=false;
   var sb=document.querySelector('#votar .sub');
-  if(sb)sb.textContent='Resultados en vivo, ordenados por votos. Tocá el botón de play para escuchar cualquier tema.';
+  if(sb)sb.textContent=COPY.setlistHintVoted;
   markMine();
 }
 function afterVote(){
