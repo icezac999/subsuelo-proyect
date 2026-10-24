@@ -202,6 +202,10 @@ footer{margin-left:-20px;margin-right:-20px;padding-left:20px;padding-right:20px
   .btn:active,.pl:active{transform:scale(.94)}
 }
 @media (prefers-reduced-motion:reduce){.reveal{opacity:1;transform:none;transition:none}}
+.hint{margin:10px 2px 0;font:500 12px/1.4 'IBM Plex Mono',ui-monospace,monospace;text-transform:uppercase;opacity:.8}
+@media (hover:none){.emb iframe{animation:nudge 1.2s ease-out 3}}
+@keyframes nudge{0%{box-shadow:0 0 0 0 rgba(29,43,255,.55)}100%{box-shadow:0 0 0 14px rgba(29,43,255,0)}}
+@media (prefers-reduced-motion:reduce){.emb iframe{animation:none!important}}
 </style>
 </head>
 <body>
@@ -216,7 +220,7 @@ footer{margin-left:-20px;margin-right:-20px;padding-left:20px;padding-right:20px
 
   <div class="hero">
     <h1>VOS ELEGÍS QUÉ SUENA</h1>
-    <p class="lede">Elegí 3 temas. Los 3 más votados los pasa el DJ en la noche del sábado.</p>
+    <p class="lede">Elegí 3 temas. Los más votados los pasa el DJ en la noche del sábado.</p>
     <p class="when">Sábado 31 de octubre, desde las 00:00. Av. Ejemplo 1234.</p>
     <a class="btn" href="#votar">Empezar a votar</a>
     <div class="waves" aria-hidden="true"><div class="wave g" id="wave2"></div><div class="wave" id="wave"></div></div>
@@ -330,6 +334,7 @@ https://open.spotify.com/track/6DUdDIRgLqCGq1DwkNWQTN
 https://open.spotify.com/track/5dDlknAL9imbXXl7uG7oqe
 `;
 var SP=null;
+var TOUCH=matchMedia('(hover:none)').matches;
 window.onSpotifyIframeApiReady=function(api){SP=api};
 (function(){var sc=document.createElement('script');sc.src='https://open.spotify.com/embed/iframe-api/v1';sc.async=true;document.head.appendChild(sc)})();
 // 2) Pegá acá la URL de tu Google Apps Script (termina en /exec) para guardar los votos.
@@ -373,6 +378,12 @@ SONGS.forEach(function(s,i){
       f.src='https://open.spotify.com/embed/track/'+s.id+'?utm_source=generator&theme=0';
       f.allow='autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture';
       f.title=s.title;emb.appendChild(f);
+    }
+    if(TOUCH){
+      var hp=document.createElement('p');hp.className='hint';
+      hp.textContent='Tocá play en el reproductor de Spotify para escuchar.';
+      emb.appendChild(hp);
+      setTimeout(function(){el.scrollIntoView({behavior:'smooth',block:'center'})},80);
     }
   };
   // Título y portada desde Spotify (oEmbed, sin clave)
